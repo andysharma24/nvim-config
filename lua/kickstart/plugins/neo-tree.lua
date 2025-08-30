@@ -21,6 +21,7 @@ return {
           ['<c-x>'] = 'clear_filter',
           ['S'] = 'search_in_folder',
           ['gs'] = 'global_search',
+          ['.'] = 'set_root', -- Use period key to set root to current folder
         },
       },
       filtered_items = {
