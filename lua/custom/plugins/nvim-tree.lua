@@ -114,7 +114,7 @@ return {
         indent_markers = {
           enable = true,
         },
-        collapse_open_dirs = false,
+        -- collapse_open_dirs = false,
         highlight_git = true,
         highlight_opened_files = 'name',
         icons = {
