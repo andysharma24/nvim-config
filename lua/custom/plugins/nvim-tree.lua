@@ -54,6 +54,9 @@ return {
       vim.keymap.set('n', 'x', api.fs.cut, opts 'Cut')
       vim.keymap.set('n', 'p', api.fs.paste, opts 'Paste')
       vim.keymap.set('n', '<CR>', api.node.open.edit, opts 'Open')
+      vim.keymap.set('n', 'f', function()
+        vim.cmd 'NvimTreeFindFile'
+      end, opts 'Find File')
     end
 
     -- Setup custom highlighting for git status files
@@ -183,7 +186,7 @@ return {
     vim.api.nvim_create_autocmd('BufEnter', {
       pattern = 'NvimTree_*',
       callback = function()
-        nvim_tree_resize(35)
+        nvim_tree_resize(55)
       end,
       group = resize_group,
     })
@@ -202,12 +205,12 @@ return {
     -- Keep existing keymaps
     keymap.set('n', '<leader>e', function()
       api.tree.focus()
-      nvim_tree_resize(35) -- Ensure it's 35 when explicitly focused
+      nvim_tree_resize(55) -- Ensure it's 35 when explicitly focused
     end, { desc = 'Focus file explorer' })
 
     keymap.set('n', '<leader>ef', function()
       api.tree.find_file { open = true, focus = true }
-      nvim_tree_resize(35) -- Ensure it's 35 when finding file
+      nvim_tree_resize(55) -- Ensure it's 35 when finding file
     end, { desc = 'Focus file in explorer' })
 
     keymap.set('n', '<leader>ec', function()

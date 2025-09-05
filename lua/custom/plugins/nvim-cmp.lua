@@ -84,6 +84,7 @@ return {
         servers = {
           -- Example: lua_ls; add others similarly
           lua_ls = { capabilities = capabilities },
+          yamlls = { capabilities = capabilities },
         },
       }
     end,
