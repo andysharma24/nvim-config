@@ -10,6 +10,15 @@ return {
         yaml = { 'yamllint' },
       }
 
+      -- Configure yamllint to ignore line length
+      lint.linters.yamllint.args = {
+        '-d',
+        '{extends: default, rules: {line-length: disable}}',
+        '--format',
+        'parsable',
+        '-',
+      }
+
       -- To allow other plugins to add linters to require('lint').linters_by_ft,
       -- instead set linters_by_ft like this:
       -- lint.linters_by_ft = lint.linters_by_ft or {}

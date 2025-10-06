@@ -77,7 +77,7 @@ return {
     nvimtree.setup {
       on_attach = on_attach,
       view = {
-        width = 25, -- Default width when not focused
+        width = 65, -- Default width when not focused
         relativenumber = true,
         signcolumn = 'yes',
         float = {
@@ -186,7 +186,7 @@ return {
     vim.api.nvim_create_autocmd('BufEnter', {
       pattern = 'NvimTree_*',
       callback = function()
-        nvim_tree_resize(55)
+        nvim_tree_resize(65)
       end,
       group = resize_group,
     })
@@ -205,12 +205,12 @@ return {
     -- Keep existing keymaps
     keymap.set('n', '<leader>e', function()
       api.tree.focus()
-      nvim_tree_resize(55) -- Ensure it's 35 when explicitly focused
+      nvim_tree_resize(65) -- Ensure it's 35 when explicitly focused
     end, { desc = 'Focus file explorer' })
 
     keymap.set('n', '<leader>ef', function()
       api.tree.find_file { open = true, focus = true }
-      nvim_tree_resize(55) -- Ensure it's 35 when finding file
+      nvim_tree_resize(65) -- Ensure it's 35 when finding file
     end, { desc = 'Focus file in explorer' })
 
     keymap.set('n', '<leader>ec', function()
