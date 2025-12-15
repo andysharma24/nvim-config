@@ -195,7 +195,7 @@ return {
     vim.api.nvim_create_autocmd('BufLeave', {
       pattern = 'NvimTree_*',
       callback = function()
-        nvim_tree_resize(30)
+        nvim_tree_resize(20)
       end,
       group = resize_group,
     })

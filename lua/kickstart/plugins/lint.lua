@@ -10,10 +10,10 @@ return {
         yaml = { 'yamllint' },
       }
 
-      -- Configure yamllint to ignore line length
+      -- Configure yamllint to ignore line length and set comments to 1 space
       lint.linters.yamllint.args = {
         '-d',
-        '{extends: default, rules: {line-length: disable}}',
+        '{extends: default, rules: {line-length: disable, comments-indentation: {min-spaces-from-content: 1}}}',
         '--format',
         'parsable',
         '-',
