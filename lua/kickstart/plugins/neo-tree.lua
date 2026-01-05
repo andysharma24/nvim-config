@@ -58,3 +58,5 @@ return {
     },
   },
 }
+-- this is hat this file does
+-- -- It configures the Neo-tree plugin for Neovim, setting up keybindings, filesystem options, custom commands for searching, and event handlers to modify window behavior and respond to git status changes.

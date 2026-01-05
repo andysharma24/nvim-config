@@ -84,7 +84,13 @@ return {
         servers = {
           -- Example: lua_ls; add others similarly
           lua_ls = { capabilities = capabilities },
-          yamlls = { capabilities = capabilities },
+          yamlls = { 
+            capabilities = vim.tbl_deep_extend('force', capabilities, {
+              textDocument = {
+                formatting = false
+              }
+            })
+          },
         },
       }
     end,
