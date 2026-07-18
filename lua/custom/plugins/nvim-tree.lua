@@ -59,19 +59,21 @@ return {
       end, opts 'Find File')
     end
 
-    -- Setup custom highlighting for git status files
-    vim.api.nvim_create_autocmd('FileType', {
-      pattern = 'NvimTree',
-      callback = function()
-        -- Yellow for changed files (both unstaged and staged)
-        vim.api.nvim_set_hl(0, 'NvimTreeGitDirty', { fg = '#FFDB00' }) -- unstaged
-        vim.api.nvim_set_hl(0, 'NvimTreeGitStaged', { fg = '#FFDB00' }) -- staged
-        -- Purple for new/untracked files
-        vim.api.nvim_set_hl(0, 'NvimTreeGitNew', { fg = '#BD93F9' })
-        -- Apply same highlighting to folders with git status
-        vim.api.nvim_set_hl(0, 'NvimTreeFolderDirty', { fg = '#FFDB00' }) -- for folders with modified content
-        vim.api.nvim_set_hl(0, 'NvimTreeFolderNew', { fg = '#BD93F9' }) -- for folders with new content
-      end,
+    -- Setup custom highlighting for git status files and open buffers
+    local function set_git_highlights()
+      vim.api.nvim_set_hl(0, 'NvimTreeGitDirty', { fg = '#E5C07B' })   -- unstaged: amber
+      vim.api.nvim_set_hl(0, 'NvimTreeGitStaged', { fg = '#98C379' })   -- staged: green
+      vim.api.nvim_set_hl(0, 'NvimTreeGitNew', { fg = '#FF9E64' })      -- untracked: orange
+      vim.api.nvim_set_hl(0, 'NvimTreeGitDeleted', { fg = '#E06C75' })  -- deleted: red
+      vim.api.nvim_set_hl(0, 'NvimTreeGitMerge', { fg = '#C678DD' })    -- unmerged: purple
+      vim.api.nvim_set_hl(0, 'NvimTreeGitRenamed', { fg = '#56B6C2' })  -- renamed: cyan
+      vim.api.nvim_set_hl(0, 'NvimTreeGitIgnored', { fg = '#5C6370' })               -- ignored: grey
+      vim.api.nvim_set_hl(0, 'NvimTreeOpenedFile', { bg = '#393E46' })  -- open files: subtle background highlight
+    end
+
+    set_git_highlights()
+    vim.api.nvim_create_autocmd('ColorScheme', {
+      callback = set_git_highlights,
     })
 
     nvimtree.setup {
@@ -118,7 +120,7 @@ return {
           enable = true,
         },
         -- collapse_open_dirs = false,
-        highlight_git = true,
+        highlight_git = 'name',
         highlight_opened_files = 'name',
         icons = {
           show = {
