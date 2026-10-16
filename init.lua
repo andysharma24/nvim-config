@@ -985,28 +985,69 @@ require('lazy').setup({
   },
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
+    -- The `master` branch is frozen and explicitly does not support Neovim
+    -- 0.12 (its directive handlers still assume the pre-0.12 `match` shape).
+    -- `main` is the supported rewrite; it drops the `configs` module, so
+    -- highlighting, indent and parser installs are wired up by hand here.
+    branch = 'main',
+    lazy = false, -- the `main` branch does not support lazy-loading
     build = ':TSUpdate',
-    main = 'nvim-treesitter.configs', -- Sets main module to use for opts
-    -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
-    opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'python', 'go', 'gomod', 'gosum' },
-      -- Autoinstall languages that are not installed
-      auto_install = true,
-      highlight = {
-        enable = true,
-        -- Some languages depend on vim's regex highlighting system (such as Ruby) for indent rules.
-        --  If you are experiencing weird indenting issues, add the language to
-        --  the list of additional_vim_regex_highlighting and disabled languages for indent.
-        additional_vim_regex_highlighting = { 'ruby' },
-      },
-      indent = { enable = true, disable = { 'ruby' } },
-    },
-    -- There are additional nvim-treesitter modules that you can use to interact
-    -- with nvim-treesitter. You should go explore a few and see what interests you:
-    --
-    --    - Incremental selection: Included, see `:help nvim-treesitter-incremental-selection-mod`
-    --    - Show your current context: https://github.com/nvim-treesitter/nvim-treesitter-context
-    --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
+    config = function()
+      local ts = require 'nvim-treesitter'
+      ts.setup()
+
+      ts.install {
+        'bash',
+        'c',
+        'diff',
+        'html',
+        'lua',
+        'luadoc',
+        'markdown',
+        'markdown_inline',
+        'query',
+        'vim',
+        'vimdoc',
+        'python',
+        'go',
+        'gomod',
+        'gosum',
+      }
+
+      -- `main` has no `auto_install`, so approximate it: the first time a
+      -- filetype is opened without a parser, install it in the background if
+      -- upstream has one. It takes effect on the next buffer of that type.
+      local available, attempted = nil, {}
+
+      vim.api.nvim_create_autocmd('FileType', {
+        group = vim.api.nvim_create_augroup('kickstart-treesitter', { clear = true }),
+        callback = function(event)
+          local lang = vim.treesitter.language.get_lang(event.match)
+          if not lang then
+            return
+          end
+
+          if not vim.treesitter.language.add(lang) then
+            available = available or ts.get_available()
+            if not attempted[lang] and vim.tbl_contains(available, lang) then
+              attempted[lang] = true
+              ts.install(lang)
+            end
+            return
+          end
+
+          -- Ruby depends on vim's regex engine for indent rules, matching the
+          -- old `additional_vim_regex_highlighting` / `indent.disable` config.
+          if event.match == 'ruby' then
+            vim.bo.syntax = 'on'
+          else
+            vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+          end
+
+          vim.treesitter.start()
+        end,
+      })
+    end,
   },
 
   -- The following comments only work if you have downloaded the kickstart repo, not just copy pasted the
@@ -1037,6 +1078,9 @@ require('lazy').setup({
   -- In normal mode type `<space>sh` then write `lazy.nvim-plugin`
   -- you can continue same window with `<space>sr` which resumes last telescope search
 }, {
+  -- oxocarbon.nvim ships a rockspec, so lazy tries a luarocks build that fails on
+  -- every startup. It's a pure-Lua colorscheme and doesn't need luarocks.
+  rocks = { enabled = false },
   ui = {
     -- If you are using a Nerd Font: set icons to an empty table which will use the
     -- default lazy.nvim defined Nerd Font icons, otherwise define a unicode icons table

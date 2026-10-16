@@ -51,6 +51,25 @@ return {
       -- lint.linters_by_ft['terraform'] = nil
       -- lint.linters_by_ft['text'] = nil
 
+      -- Only lint with tools that are actually installed. Without this a
+      -- missing binary (e.g. yamllint) errors on every write:
+      --   Error running yamllint: ENOENT: no such file or directory
+      local function installed_linters()
+        local names = lint.linters_by_ft[vim.bo.filetype] or {}
+        local available = {}
+        for _, name in ipairs(names) do
+          local linter = lint.linters[name]
+          local cmd = type(linter) == 'table' and linter.cmd or nil
+          if type(cmd) == 'function' then
+            cmd = cmd()
+          end
+          if cmd and vim.fn.executable(cmd) == 1 then
+            table.insert(available, name)
+          end
+        end
+        return available
+      end
+
       -- Create autocommand which carries out the actual linting
       -- on the specified events.
       local lint_augroup = vim.api.nvim_create_augroup('lint', { clear = true })
@@ -61,7 +80,10 @@ return {
           -- avoid superfluous noise, notably within the handy LSP pop-ups that
           -- describe the hovered symbol using Markdown.
           if vim.bo.modifiable then
-            lint.try_lint()
+            local available = installed_linters()
+            if #available > 0 then
+              lint.try_lint(available)
+            end
           end
         end,
       })
